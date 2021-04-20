@@ -3,39 +3,39 @@ const {
   silenceWarnings,
 } = require("@openzeppelin/truffle-upgrades");
 
-const ForgeToken = artifacts.require("ForgeToken");
-const ZUT = artifacts.require("ZUT");
+const DragunToken = artifacts.require("DragunToken");
+const DWLD = artifacts.require("DWLD");
 
 const ETH_FEE = web3.utils.toWei("10");
-const ZUT_FEE = web3.utils.toWei("0.005");
+const DWLD_FEE = web3.utils.toWei("0.005");
 
-const FEE_RECIPIENT = "0x8Aa0B4FB0d0E1bB95959BaE95F81D71D1c6b6fF7";
+const FEE_RECIPIENT = "0x2402aa453F593fF39f443B177c84413b7Eb7971D";
 
-const APP_URL = "https://nftminter.zeroutility.com/";
+const APP_URL = "https://dragun.world/";
 
 module.exports = async function (deployer, network, accounts) {
   if (network === "test") return;
 
   silenceWarnings();
 
-  // DEPLOY PROXY ZUT ERC20
-  await deployer.deploy(ZUT);
-  const zutToken = await ZUT.deployed();
+  // DEPLOY PROXY DWLD ERC20
+  await deployer.deploy(DWLD);
+  const dwldToken = await DWLD.deployed();
 
   if (network === "development")
-    zutToken.mint(accounts[0], web3.utils.toWei("1000"));
+    dwldToken.mint(accounts[0], web3.utils.toWei("1000"));
 
-  // DEPLOY PROXY FORGE ERC1155
-  const forgeToken = await deployProxy(
-    ForgeToken,
-    [zutToken.address, FEE_RECIPIENT, ETH_FEE, ZUT_FEE],
+  // DEPLOY PROXY DRAGUN ERC1155
+  const dragunToken = await deployProxy(
+    DragunToken,
+    [dwldToken.address, FEE_RECIPIENT, ETH_FEE, DWLD_FEE],
     { deployer, unsafeAllowCustomTypes: true }
   );
 
-  await forgeToken.setContractURI(APP_URL);
+  await dragunToken.setContractURI(APP_URL);
 
-  console.log("Deployed Forge", forgeToken.address);
+  console.log("Deployed Dragun", dragunToken.address);
 
   console.log("Granting Burner Role to Accounts 0");
-  await forgeToken.grantRole(web3.utils.sha3("BURNER_ROLE"), accounts[0]);
+  await dragunToken.grantRole(web3.utils.sha3("BURNER_ROLE"), accounts[0]);
 };

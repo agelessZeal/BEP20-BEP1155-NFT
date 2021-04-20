@@ -1,4 +1,4 @@
-const ForgeToken = artifacts.require("ForgeToken");
+const DragunToken = artifacts.require("DragunToken");
 
 // used to test with ganache
 // truffle exec scripts/createTokens.js
@@ -7,18 +7,18 @@ module.exports = async (callback) => {
   try {
     const accounts = await web3.eth.getAccounts();
 
-    const ZUT_ADDRESS = "0x2bAb96D1D3Fafcd5185d69a53D24925fc8163E40";
+    const DWLD_ADDRESS = "0x2bAb96D1D3Fafcd5185d69a53D24925fc8163E40";
     const IPFS_HASH = "QmYBzDTi64be4q8grwmQNNaWRgN8YeHU1w5MyoHEDjcZKk";
     const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-    const forge = await ForgeToken.at(
+    const forge = await DragunToken.at(
       "0xA3d85039287FcC632e060EDFc82B422Cd5cDe99f"
     );
 
     console.log(`Buying NFTs...`);
     await forge.buyWithETH(
       5,
-      ZUT_ADDRESS,
+      DWLD_ADDRESS,
       web3.utils.toWei("100"),
       0,
       IPFS_HASH,

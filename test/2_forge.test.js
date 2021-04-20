@@ -7,31 +7,31 @@ const {
   time,
 } = require("@openzeppelin/test-helpers");
 
-const ForgeToken = artifacts.require("ForgeToken");
-const ZUT = artifacts.require("ZUT");
+const DragunToken = artifacts.require("DragunToken");
+const DWLD = artifacts.require("DWLD");
 
 const ETH_FEE = web3.utils.toWei("0.02");
-const ZUT_FEE = web3.utils.toWei("0.01");
+const DWLD_FEE = web3.utils.toWei("0.01");
 
 const IPFS_HASH1 = "Qmbd1guB9bi3hKEYGGvQJYNvDUpCeuW3y4J7ydJtHfYMF6";
 const IPFS_HASH2 = "QmTo5Vo3q2xF7Q4vCqkEN3iEuowVyo8rJtBXXQJw5rnXMB";
 
-contract("Forge Token", ([admin, alice, bob, feeRecipient, ...users]) => {
-  let zut, forge;
+contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
+  let dwld, forge;
 
   before(async function () {
-    zut = await ZUT.new();
+    dwld = await DWLD.new();
 
     // DEPLOY PROXY FORGE ERC1155
     forge = await deployProxy(
-      ForgeToken,
-      [zut.address, feeRecipient, ETH_FEE, ZUT_FEE],
+      DragunToken,
+      [dwld.address, feeRecipient, ETH_FEE, DWLD_FEE],
       { admin, unsafeAllowCustomTypes: true }
     );
 
-    // Fund users with ZUT tokens
-    await zut.mint(alice, web3.utils.toWei("1000"));
-    await zut.mint(bob, web3.utils.toWei("1000"));
+    // Fund users with DWLD tokens
+    await dwld.mint(alice, web3.utils.toWei("1000"));
+    await dwld.mint(bob, web3.utils.toWei("1000"));
   });
 
   describe("Initial Values", function () {
@@ -40,9 +40,9 @@ contract("Forge Token", ([admin, alice, bob, feeRecipient, ...users]) => {
       assert.equal(ethFee, ETH_FEE);
     });
 
-    it("should return correct ZUT fee", async function () {
-      const zutFee = await forge.zutFee();
-      assert.equal(zutFee, ZUT_FEE);
+    it("should return correct DWLD fee", async function () {
+      const dwldFee = await forge.dwldFee();
+      assert.equal(dwldFee, DWLD_FEE);
     });
 
     it("should return correct current token Id", async function () {
@@ -55,9 +55,9 @@ contract("Forge Token", ([admin, alice, bob, feeRecipient, ...users]) => {
       assert.equal(_feeRecipient, feeRecipient);
     });
 
-    it("should return correct current zut token address", async function () {
-      const zutAddress = await forge.zut();
-      assert.equal(zutAddress, zut.address);
+    it("should return correct current dwld token address", async function () {
+      const dwldAddress = await forge.dwld();
+      assert.equal(dwldAddress, dwld.address);
     });
   });
 
@@ -66,7 +66,7 @@ contract("Forge Token", ([admin, alice, bob, feeRecipient, ...users]) => {
       const currentTime = await time.latest();
 
       await expectRevert(
-        forge.buyWithETH(50, zut.address, 2, currentTime + 10, IPFS_HASH1, {
+        forge.buyWithETH(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
           from: alice,
         }),
         "Not enough ETH sent"
@@ -76,7 +76,7 @@ contract("Forge Token", ([admin, alice, bob, feeRecipient, ...users]) => {
     it("should buy 50 tokens using ETH", async function () {
       const currentTime = await time.latest();
 
-      await forge.buyWithETH(50, zut.address, 2, currentTime + 10, IPFS_HASH1, {
+      await forge.buyWithETH(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
         from: alice,
         value: 50 * ETH_FEE,
       });
@@ -85,23 +85,23 @@ contract("Forge Token", ([admin, alice, bob, feeRecipient, ...users]) => {
       assert.equal(aliceBalance, 50);
     });
 
-    it("reverts when buying tokens without without approving ZUT first", async function () {
+    it("reverts when buying tokens without without approving DWLD first", async function () {
       const currentTime = await time.latest();
 
       await expectRevert(
-        forge.buyWithZUT(50, zut.address, 2, currentTime + 10, IPFS_HASH1, {
+        forge.buyWithDWLD(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
           from: bob,
         }),
         "ERC20: transfer amount exceeds allowance"
       );
     });
 
-    it("should buy 50 tokens using ZUT", async function () {
+    it("should buy 50 tokens using DWLD", async function () {
       const currentTime = await time.latest();
 
-      await zut.approve(forge.address, String(50 * ZUT_FEE), { from: bob });
+      await dwld.approve(forge.address, String(50 * DWLD_FEE), { from: bob });
 
-      await forge.buyWithZUT(
+      await forge.buyWithDWLD(
         50,
         constants.ZERO_ADDRESS,
         0,
@@ -144,24 +144,24 @@ contract("Forge Token", ([admin, alice, bob, feeRecipient, ...users]) => {
     });
 
     it("should not be able to burn if user meets min balance", async function () {
-      // Fund users with min balance (2 ZUT)
+      // Fund users with min balance (2 DWLD)
       for (let i = 0; i < 3; i++) {
-        await zut.mint(users[i], web3.utils.toWei("2"));
+        await dwld.mint(users[i], web3.utils.toWei("2"));
       }
 
       for (let i = 0; i < 3; i++) {
-        const canBurn = await forge.canBurn(0, users[i]); // users do not have ZUT tokens yet
+        const canBurn = await forge.canBurn(0, users[i]); // users do not have DWLD tokens yet
         assert(!canBurn);
       }
     });
 
-    it("only burner role should be able to burn a token when ZUT min balance conditions is met", async function () {
+    it("only burner role should be able to burn a token when DWLD min balance conditions is met", async function () {
       await expectRevert(
         forge.burnToken(0, users[0], { from: alice }),
         "Can't burn token yet"
       );
 
-      await zut.transfer(alice, web3.utils.toWei("2"), { from: users[0] });
+      await dwld.transfer(alice, web3.utils.toWei("2"), { from: users[0] });
 
       await expectRevert(
         forge.burnToken(0, users[0], { from: alice }),

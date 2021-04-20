@@ -7,7 +7,7 @@
         <mxCell id="j2drVOKHEnY01O1bSISk-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="295" y="80" width="260" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="j2drVOKHEnY01O1bSISk-3" value="Forge Utility Contract" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
+        <mxCell id="j2drVOKHEnY01O1bSISk-3" value="Dragun Utility Contract" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
           <mxGeometry x="360" y="80" width="130" height="20" as="geometry" />
         </mxCell>
         <mxCell id="j2drVOKHEnY01O1bSISk-4" value="Unique 721 Contract&lt;br&gt;Address" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
@@ -130,7 +130,7 @@
         <mxCell id="WHHFlCE1nlVrn1xIU7CA-3" value="NFT&lt;br&gt;&lt;i&gt;UNIQUE TOKEN&lt;br&gt;&lt;/i&gt;ID" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
           <mxGeometry x="380" y="440" width="10" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="WHHFlCE1nlVrn1xIU7CA-5" value="Eligible for benefits on both as NFTs have same &quot;NFT Forge&quot; Contract Address" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="WHHFlCE1nlVrn1xIU7CA-5" value="Eligible for benefits on both as NFTs have same &quot;NFT Dragun&quot; Contract Address" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="328.5" y="500" width="205" height="100" as="geometry" />
         </mxCell>
         <mxCell id="WHHFlCE1nlVrn1xIU7CA-6" value="" style="endArrow=none;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" target="j2drVOKHEnY01O1bSISk-4">

@@ -4,27 +4,27 @@ const {
   silenceWarnings,
 } = require("@openzeppelin/truffle-upgrades");
 
-const ForgeToken = artifacts.require("ForgeToken");
+const DragunToken = artifacts.require("DragunToken");
 const ForgeTokenV2 = artifacts.require("ForgeTokenV2");
-const ZUT = artifacts.require("ZUT");
+const DWLD = artifacts.require("DWLD");
 
 const ETH_FEE = web3.utils.toWei("0.02");
-const ZUT_FEE = web3.utils.toWei("0.03");
+const DWLD_FEE = web3.utils.toWei("0.03");
 
 contract("Upgradeability", ([admin, alice, bob, feeRecipient]) => {
-  let zut, forge;
+  let dwld, forge;
 
   silenceWarnings();
 
   describe("Deployment", function () {
-    it("should be able to deploy ZUT ERC20", async function () {
-      zut = await ZUT.new();
+    it("should be able to deploy DWLD ERC20", async function () {
+      dwld = await DWLD.new();
     });
 
-    it("should be able to deploy Forge proxy ERC1155", async function () {
+    it("should be able to deploy Dragun proxy ERC1155", async function () {
       forge = await deployProxy(
-        ForgeToken,
-        [zut.address, feeRecipient, ETH_FEE, ZUT_FEE],
+        DragunToken,
+        [dwld.address, feeRecipient, ETH_FEE, DWLD_FEE],
         { admin, unsafeAllowCustomTypes: true }
       );
     });
@@ -36,9 +36,9 @@ contract("Upgradeability", ([admin, alice, bob, feeRecipient]) => {
       assert.equal(ethFee, ETH_FEE);
     });
 
-    it("should return correct ZUT fee", async function () {
-      const zutFee = await forge.zutFee();
-      assert.equal(zutFee, ZUT_FEE);
+    it("should return correct DWLD fee", async function () {
+      const dwldFee = await forge.dwldFee();
+      assert.equal(dwldFee, DWLD_FEE);
     });
   });
 
@@ -55,9 +55,9 @@ contract("Upgradeability", ([admin, alice, bob, feeRecipient]) => {
       assert.equal(ethFee, ETH_FEE);
     });
 
-    it("should return correct ZUT fee after upgrade", async function () {
-      const zutFee = await forge.zutFee();
-      assert.equal(zutFee, ZUT_FEE);
+    it("should return correct DWLD fee after upgrade", async function () {
+      const dwldFee = await forge.dwldFee();
+      assert.equal(dwldFee, DWLD_FEE);
     });
   });
 });

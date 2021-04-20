@@ -60,6 +60,15 @@ module.exports = {
       gasPrice: 20e9, // 20 Gwei, Change this value according to price average of the deployment time
       gas: 2e6,
     },
+    bsc: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.PRIVATE_KEY,
+          `https://bsc-dataseed.binance.org/`
+        ),
+      network_id: 56,
+      gasPrice: 5e9,
+    },
   },
   compilers: {
     solc: {

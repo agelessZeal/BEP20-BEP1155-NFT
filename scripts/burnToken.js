@@ -1,10 +1,10 @@
-const ForgeToken = artifacts.require("ForgeToken");
+const DragunToken = artifacts.require("DragunToken");
 
 //truffle exec scripts/burnToken.js 0xB29aE9a9BF7CA2984a6a09939e49d9Cf46AB0c1d 0 --network rinkeby
 
 module.exports = async (callback) => {
   try {
-    const forge = await ForgeToken.at(
+    const forge = await DragunToken.at(
       "0x4359C08b706B6BD92E2991d7cD143C5894d1a02f"
     );
 

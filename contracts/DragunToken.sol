@@ -9,11 +9,11 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol
 import "./utils/Strings.sol";
 
 /**
- * @title Forge Token Protocol
+ * @title Dragun Token Protocol
  * @notice Mint NFTs with burnable conditions
  */
 
-contract ForgeToken is ERC1155PresetMinterPauserUpgradeable {
+contract DragunToken is ERC1155PresetMinterPauserUpgradeable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
     using SafeERC20Upgradeable for IERC20Upgradeable;
     using SafeMathUpgradeable for uint256;
@@ -22,10 +22,10 @@ contract ForgeToken is ERC1155PresetMinterPauserUpgradeable {
 
     CountersUpgradeable.Counter private _tokenIdTracker;
 
-    IERC20Upgradeable public zut;
+    IERC20Upgradeable public dwld;
 
     uint256 public ethFee;
-    uint256 public zutFee;
+    uint256 public dwldFee;
 
     address payable public feeRecipient;
 
@@ -45,17 +45,17 @@ contract ForgeToken is ERC1155PresetMinterPauserUpgradeable {
      * @dev initialize variables, used for upgradeable contracts
      */
     function initialize(
-        IERC20Upgradeable _zut,
+        IERC20Upgradeable _dwld,
         address payable _feeRecipient,
         uint256 _ethFee,
-        uint256 _zutFee
+        uint256 _dwldFee
     ) public initializer {
         ERC1155PresetMinterPauserUpgradeable.initialize("");
         _baseURI = "ipfs://";
-        zut = _zut;
+        dwld = _dwld;
         feeRecipient = _feeRecipient;
         ethFee = _ethFee;
-        zutFee = _zutFee;
+        dwldFee = _dwldFee;
     }
 
     /**
@@ -201,9 +201,9 @@ contract ForgeToken is ERC1155PresetMinterPauserUpgradeable {
     }
 
     /**
-     * @notice Create NFT Collecions paying with ZUT
+     * @notice Create NFT Collecions paying with DWLD
      */
-    function buyWithZUT(
+    function buyWithDWLD(
         uint256 amountTokens,
         address tokenAddress,
         uint256 minBalance,
@@ -216,12 +216,12 @@ contract ForgeToken is ERC1155PresetMinterPauserUpgradeable {
         if (minBalance > 0)
             require(tokenAddress != address(0), "Invalid Address");
 
-        // uint256 amountFee = zutFee.mul(amountTokens);
+        // uint256 amountFee = dwldFee.mul(amountTokens);
 
-        uint256 amountFee = zutFee;
+        uint256 amountFee = dwldFee;
 
-        // Collect fees in ZUT token
-        zut.safeTransferFrom(_msgSender(), feeRecipient, amountFee);
+        // Collect fees in DWLD token
+        dwld.safeTransferFrom(_msgSender(), feeRecipient, amountFee);
 
         uint256 tokenId = _tokenIdTracker.current();
 
@@ -298,8 +298,8 @@ contract ForgeToken is ERC1155PresetMinterPauserUpgradeable {
         ethFee = _ethFee;
     }
 
-    function setZUTFee(uint256 _zutFee) external onlyAdmin {
-        zutFee = _zutFee;
+    function setDWLDFee(uint256 _dwldFee) external onlyAdmin {
+        dwldFee = _dwldFee;
     }
 
     function setFeeRecipient(address payable _feeRecipient) external onlyAdmin {
