@@ -1,5 +1,5 @@
 {
-  "name": "nft-forge",
+  "name": "nft-dragun",
   "version": "1.0.0",
   "description": "",
   "main": "truffle-config.js",
@@ -14,7 +14,7 @@
     "mainnet_matic": "truffle migrate --reset --network mainnet_matic",
     "ropsten": "truffle migrate --reset --network ropsten",
     "test": "truffle test --network test",
-    "test-f": "truffle test --network test test/2_forge.test.js",
+    "test-f": "truffle test --network test test/2_dragun.test.js",
     "upgrade": "truffle exec scripts/upgradeForge.js --network rinkeby"
   },
   "repository": {

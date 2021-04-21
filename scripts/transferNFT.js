@@ -5,7 +5,7 @@ const DragunToken = artifacts.require("DragunToken");
 module.exports = async (callback) => {
   try {
     const accounts = await web3.eth.getAccounts();
-    const forge = await DragunToken.at(
+    const dragun = await DragunToken.at(
       "0x9561C133DD8580860B6b7E504bC5Aa500f0f06a7"
     );
 
@@ -13,8 +13,8 @@ module.exports = async (callback) => {
     const tokenId = process.argv[5];
 
     console.log(`Transfering 1 NFT of id #${tokenId} to ${to} `);
-    await forge.safeTransferFrom(accounts[0], to, tokenId, 1, "0x");
-    const balance = await forge.balanceOf(to, tokenId);
+    await dragun.safeTransferFrom(accounts[0], to, tokenId, 1, "0x");
+    const balance = await dragun.balanceOf(to, tokenId);
     console.log(`Done! New Balance: ${String(balance)} NFT id #${tokenId}`);
 
     callback();

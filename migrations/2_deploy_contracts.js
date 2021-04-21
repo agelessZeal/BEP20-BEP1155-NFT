@@ -6,7 +6,7 @@ const {
 const DragunToken = artifacts.require("DragunToken");
 const DWLD = artifacts.require("DWLD");
 
-const ETH_FEE = web3.utils.toWei("10");
+const ETH_FEE = web3.utils.toWei("0.1");
 const DWLD_FEE = web3.utils.toWei("0.005");
 
 const FEE_RECIPIENT = "0x2402aa453F593fF39f443B177c84413b7Eb7971D";

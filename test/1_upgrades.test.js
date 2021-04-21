@@ -12,7 +12,7 @@ const ETH_FEE = web3.utils.toWei("0.02");
 const DWLD_FEE = web3.utils.toWei("0.03");
 
 contract("Upgradeability", ([admin, alice, bob, feeRecipient]) => {
-  let dwld, forge;
+  let dwld, dragun;
 
   silenceWarnings();
 
@@ -22,7 +22,7 @@ contract("Upgradeability", ([admin, alice, bob, feeRecipient]) => {
     });
 
     it("should be able to deploy Dragun proxy ERC1155", async function () {
-      forge = await deployProxy(
+      dragun = await deployProxy(
         DragunToken,
         [dwld.address, feeRecipient, ETH_FEE, DWLD_FEE],
         { admin, unsafeAllowCustomTypes: true }
@@ -32,31 +32,31 @@ contract("Upgradeability", ([admin, alice, bob, feeRecipient]) => {
 
   describe("Initial Values", function () {
     it("should return correct ETH fee", async function () {
-      const ethFee = await forge.ethFee();
+      const ethFee = await dragun.ethFee();
       assert.equal(ethFee, ETH_FEE);
     });
 
     it("should return correct DWLD fee", async function () {
-      const dwldFee = await forge.dwldFee();
+      const dwldFee = await dragun.dwldFee();
       assert.equal(dwldFee, DWLD_FEE);
     });
   });
 
   describe("Upgrade", function () {
     it("should upgrade contract to V2 by admin", async function () {
-      forge = await upgradeProxy(forge.address, ForgeTokenV2, {
+      dragun = await upgradeProxy(dragun.address, ForgeTokenV2, {
         admin,
         unsafeAllowCustomTypes: true,
       });
     });
 
     it("should return correct ETH fee after upgrade", async function () {
-      const ethFee = await forge.ethFee();
+      const ethFee = await dragun.ethFee();
       assert.equal(ethFee, ETH_FEE);
     });
 
     it("should return correct DWLD fee after upgrade", async function () {
-      const dwldFee = await forge.dwldFee();
+      const dwldFee = await dragun.dwldFee();
       assert.equal(dwldFee, DWLD_FEE);
     });
   });

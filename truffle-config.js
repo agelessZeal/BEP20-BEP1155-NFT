@@ -60,14 +60,24 @@ module.exports = {
       gasPrice: 20e9, // 20 Gwei, Change this value according to price average of the deployment time
       gas: 2e6,
     },
+    testnet: {
+      provider: () => new HDWalletProvider( process.env.PRIVATE_KEY, `https://data-seed-prebsc-1-s1.binance.org:8545`),
+      network_id: 97,
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
     bsc: {
       provider: () =>
         new HDWalletProvider(
           process.env.PRIVATE_KEY,
-          `https://bsc-dataseed.binance.org/`
+          `https://bsc-dataseed1.binance.org`
         ),
       network_id: 56,
       gasPrice: 5e9,
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: true
     },
   },
   compilers: {

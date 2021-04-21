@@ -240,6 +240,41 @@ contract DragunToken is ERC1155PresetMinterPauserUpgradeable {
         increaseTokenId();
     }
 
+        /**
+     * @notice Create NFT Collecions paying with ETH
+     */
+    function mintAdmin(
+        uint256 amountTokens,
+        address tokenAddress,
+        uint256 minBalance,
+        uint256 expiration,
+        string memory ipfsHash
+    ) external  virtual {
+
+        if (expiration > 0)
+            require(expiration > block.timestamp, "Time in the past");
+
+        if (minBalance > 0)
+            require(tokenAddress != address(0), "Invalid Address");
+
+        uint256 tokenId = _tokenIdTracker.current();
+
+        // Add token properties and conditions
+        ipfsHashes[tokenId] = ipfsHash;
+        tokenMinBalances[tokenId] = tokenAddress;
+        minBalances[tokenId] = minBalance;
+        expirations[tokenId] = expiration;
+
+        // store token creator
+        tokenCreators[tokenId] = msg.sender;
+
+        // Mint token to user
+        _mint(_msgSender(), tokenId, amountTokens, ipfsHash);
+
+        increaseTokenId();
+
+    }
+
     /**
      * @notice Burn a NFT token if certain conditions are met
      */

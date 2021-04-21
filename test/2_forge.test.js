@@ -17,13 +17,13 @@ const IPFS_HASH1 = "Qmbd1guB9bi3hKEYGGvQJYNvDUpCeuW3y4J7ydJtHfYMF6";
 const IPFS_HASH2 = "QmTo5Vo3q2xF7Q4vCqkEN3iEuowVyo8rJtBXXQJw5rnXMB";
 
 contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
-  let dwld, forge;
+  let dwld, dragun;
 
   before(async function () {
     dwld = await DWLD.new();
 
     // DEPLOY PROXY FORGE ERC1155
-    forge = await deployProxy(
+    dragun = await deployProxy(
       DragunToken,
       [dwld.address, feeRecipient, ETH_FEE, DWLD_FEE],
       { admin, unsafeAllowCustomTypes: true }
@@ -36,27 +36,27 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
 
   describe("Initial Values", function () {
     it("should return correct ETH fee", async function () {
-      const ethFee = await forge.ethFee();
+      const ethFee = await dragun.ethFee();
       assert.equal(ethFee, ETH_FEE);
     });
 
     it("should return correct DWLD fee", async function () {
-      const dwldFee = await forge.dwldFee();
+      const dwldFee = await dragun.dwldFee();
       assert.equal(dwldFee, DWLD_FEE);
     });
 
     it("should return correct current token Id", async function () {
-      const currentTokenId = await forge.currentTokenId();
+      const currentTokenId = await dragun.currentTokenId();
       assert.equal(currentTokenId, 0);
     });
 
     it("should return correct current fee recipient", async function () {
-      const _feeRecipient = await forge.feeRecipient();
+      const _feeRecipient = await dragun.feeRecipient();
       assert.equal(_feeRecipient, feeRecipient);
     });
 
     it("should return correct current dwld token address", async function () {
-      const dwldAddress = await forge.dwld();
+      const dwldAddress = await dragun.dwld();
       assert.equal(dwldAddress, dwld.address);
     });
   });
@@ -66,7 +66,7 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
       const currentTime = await time.latest();
 
       await expectRevert(
-        forge.buyWithETH(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
+        dragun.buyWithETH(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
           from: alice,
         }),
         "Not enough ETH sent"
@@ -76,12 +76,12 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
     it("should buy 50 tokens using ETH", async function () {
       const currentTime = await time.latest();
 
-      await forge.buyWithETH(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
+      await dragun.buyWithETH(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
         from: alice,
         value: 50 * ETH_FEE,
       });
 
-      const aliceBalance = await forge.balanceOf(alice, 0);
+      const aliceBalance = await dragun.balanceOf(alice, 0);
       assert.equal(aliceBalance, 50);
     });
 
@@ -89,7 +89,7 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
       const currentTime = await time.latest();
 
       await expectRevert(
-        forge.buyWithDWLD(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
+        dragun.buyWithDWLD(50, dwld.address, 2, currentTime + 10, IPFS_HASH1, {
           from: bob,
         }),
         "ERC20: transfer amount exceeds allowance"
@@ -99,9 +99,9 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
     it("should buy 50 tokens using DWLD", async function () {
       const currentTime = await time.latest();
 
-      await dwld.approve(forge.address, String(50 * DWLD_FEE), { from: bob });
+      await dwld.approve(dragun.address, String(50 * DWLD_FEE), { from: bob });
 
-      await forge.buyWithDWLD(
+      await dragun.buyWithDWLD(
         50,
         constants.ZERO_ADDRESS,
         0,
@@ -112,26 +112,26 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
         }
       );
 
-      const bobBalance = await forge.balanceOf(bob, 1);
+      const bobBalance = await dragun.balanceOf(bob, 1);
       assert.equal(bobBalance, 50);
     });
 
     it("should be able to transfer bought tokens to other users", async function () {
       for (let i = 0; i < 3; i++) {
-        await forge.safeTransferFrom(alice, users[i], 0, 1, "0x", {
+        await dragun.safeTransferFrom(alice, users[i], 0, 1, "0x", {
           from: alice,
         });
 
-        let tokenBalance = await forge.balanceOf(users[i], 0);
+        let tokenBalance = await dragun.balanceOf(users[i], 0);
         assert.equal(tokenBalance, 1);
       }
 
       for (let i = 0; i < 3; i++) {
-        await forge.safeTransferFrom(bob, users[i], 1, 1, "0x", {
+        await dragun.safeTransferFrom(bob, users[i], 1, 1, "0x", {
           from: bob,
         });
 
-        let tokenBalance = await forge.balanceOf(users[i], 1);
+        let tokenBalance = await dragun.balanceOf(users[i], 1);
         assert.equal(tokenBalance, 1);
       }
     });
@@ -139,7 +139,7 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
 
   describe("Burning Tokens", function () {
     it("newly minted tokens should not be burnable", async function () {
-      const canBurn = await forge.canBurn(0, alice);
+      const canBurn = await dragun.canBurn(0, alice);
       assert(!canBurn);
     });
 
@@ -150,36 +150,36 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
       }
 
       for (let i = 0; i < 3; i++) {
-        const canBurn = await forge.canBurn(0, users[i]); // users do not have DWLD tokens yet
+        const canBurn = await dragun.canBurn(0, users[i]); // users do not have DWLD tokens yet
         assert(!canBurn);
       }
     });
 
     it("only burner role should be able to burn a token when DWLD min balance conditions is met", async function () {
       await expectRevert(
-        forge.burnToken(0, users[0], { from: alice }),
+        dragun.burnToken(0, users[0], { from: alice }),
         "Can't burn token yet"
       );
 
       await dwld.transfer(alice, web3.utils.toWei("2"), { from: users[0] });
 
       await expectRevert(
-        forge.burnToken(0, users[0], { from: alice }),
+        dragun.burnToken(0, users[0], { from: alice }),
         "Must have burner role"
       );
 
       // Add burner role
-      await forge.grantRole(web3.utils.sha3("BURNER_ROLE"), admin, {
+      await dragun.grantRole(web3.utils.sha3("BURNER_ROLE"), admin, {
         from: admin,
       });
 
       // Burn token
-      await forge.burnToken(0, users[0], { from: admin });
+      await dragun.burnToken(0, users[0], { from: admin });
     });
 
     it("should be able to burn tokens in batch when it expires", async function () {
       await expectRevert(
-        forge.burnToken(1, users[0], { from: admin }),
+        dragun.burnToken(1, users[0], { from: admin }),
         "Can't burn token yet"
       );
 
@@ -187,7 +187,7 @@ contract("Dragun Token", ([admin, alice, bob, feeRecipient, ...users]) => {
       await time.advanceBlock(1);
 
       // Burn token
-      await forge.burnTokenBatch(
+      await dragun.burnTokenBatch(
         Array(3).fill(1),
         [users[0], users[1], users[2]],
         { from: admin }

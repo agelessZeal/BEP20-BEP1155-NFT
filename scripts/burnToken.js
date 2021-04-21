@@ -4,19 +4,19 @@ const DragunToken = artifacts.require("DragunToken");
 
 module.exports = async (callback) => {
   try {
-    const forge = await DragunToken.at(
+    const dragun = await DragunToken.at(
       "0x4359C08b706B6BD92E2991d7cD143C5894d1a02f"
     );
 
     const user = process.argv[4];
     const tokenId = process.argv[5];
 
-    const canBurn = await forge.canBurn(tokenId, user);
+    const canBurn = await dragun.canBurn(tokenId, user);
 
     if (!canBurn) throw new Error("Can't burn token from this user!");
 
     console.log(`Burning NFT with id ${tokenId} from ${user} `);
-    await forge.burnToken(tokenId, user);
+    await dragun.burnToken(tokenId, user);
 
     callback();
   } catch (e) {
