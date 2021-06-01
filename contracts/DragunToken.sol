@@ -269,7 +269,7 @@ contract DragunToken is ERC1155PresetMinterPauserUpgradeable {
         tokenCreators[tokenId] = msg.sender;
 
         // Mint token to user
-        _mint(_msgSender(), tokenId, amountTokens, ipfsHash);
+        _mint(_msgSender(), tokenId, amountTokens, "");
 
         increaseTokenId();
 
